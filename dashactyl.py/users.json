@@ -1,0 +1,5 @@
+{
+    "discorduserID (integer)": [
+        "pterouserID (string)", "email (string)"
+    ]
+}
