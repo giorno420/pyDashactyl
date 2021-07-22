@@ -1,0 +1,11 @@
+{
+    "pterodactyl": {
+        "url": "https://panel.amongus.com/",
+        "key": "aasdasdasdasdsadas"
+    },
+    "discord": {
+        "application_id": "862438412996837419",
+        "secret_key": "asdasdasd",
+        "redirect_uri": "http://127.0.0.1:5000/callback"
+    }
+}
