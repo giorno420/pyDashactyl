@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn Coins!</title>
+</head>
+<body>
+    <script src='/static/js/timeme.js'></script>
+    <script type="text/javascript">
+		TimeMe.initialize({currentPageName: "dashactylPython", idleTimeoutInSeconds: 99999999999999999999999999999999999999999999, });
+		window.onload = function () {
+			setInterval(function () {
+				let uptime = TimeMe.getTimeOnCurrentPageInMilliseconds()
+      let seconds = uptime / 1000;
+      let days = parseInt(seconds / 86400);
+      seconds = seconds % 86400;
+      let hours = parseInt(seconds / 3600);
+      seconds = seconds % 3600;
+      let minutes = parseInt(seconds / 60);
+      seconds = parseInt(seconds % 60);
+    
+      uptime = `${seconds}s`;
+      if (days) {
+        uptime = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+      }
+      else if (hours) {
+        uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
+      }
+      else if (minutes) {
+        uptime = `${minutes} minutes and ${seconds} seconds`;
+      }
+      else if (seconds) {
+        uptime = `${seconds} seconds`;
+      }
+				document.getElementById('timeInSeconds').textContent = uptime
+			}, 37);
+		}
+    setInterval(function () {
+$.ajax({type: "POST", url:  "/", data: JSON.stringify({type: 'arc', time: TimeMe.getTimeOnCurrentPageInSeconds(), ms: TimeMe.getTimeOnCurrentPageInMilliseconds(), }), contentType: 'application/json'})}, 2000);
+	
+    </script>
+
+</body>
+<p id="timeInSeconds" method="POST"></p>
+</html>

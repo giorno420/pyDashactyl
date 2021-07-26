@@ -26,5 +26,5 @@ pteroURL = pterosettings['url']
 pteroAppKey = pterosettings['key']
 
 
-with open('users.json') as usrs:
+with open('api\\users.json') as usrs:
     users = json.load(usrs)

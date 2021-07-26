@@ -1,56 +1,73 @@
 import json
 import random
+import string
 import discord
 import requests
-import configfile
 from urllib.parse import quote
 from pydactyl import PterodactylClient
 from requests.exceptions import HTTPError
 
 """
-Creates Pterodactyl users and links their
-main email with their Pterodactyl panel
-user ID, and their Discord ID.
-
-Links in json file. It's not in the `templates` directory, 
-so it wont be accessable from the web page.
+Creates Pterodactyl users and checks
+if they exist. If they don't, it makes an account
 
 Make a pull request if you think anything can be improved.
 """
+
+# ------------------------------------------------------------------
+
+with open('settings.json', 'r') as cfg:
+    settings = json.load(cfg)
+    discordsettings = settings["discord"]
+    pterosettings = settings["pterodactyl"]
+
+
+clientID = discordsettings['application_id']
+clientSecret = discordsettings['secret_key']
+redirectURI = discordsettings['redirect_uri']
+
+pteroURL = pterosettings['url']
+pteroAppKey = pterosettings['key']
+
+# ------------------------------------------------------------------
+
+with open('api\\users.json') as usrs:
+    users = json.load(usrs)
+
+def checkIfUserExists(discordEmail):
+    url = f"{pteroURL}/api/application/users?filter{str(quote(f'={discordEmail}'))}"
+    headers = {
+        "Authorization": f"Bearer {pteroAppKey}",
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    response = requests.get(url, headers=headers).json()['data']
+    i = 0
+    for i in range(len(response)):
+        emailtester = response[i]['attributes']['email']
+        if emailtester == discordEmail:
+            response = response[i]['attributes']
+            break
+        else:
+            i += 1
+    return response
+
+
 
 def create_user(discordUsername, discordEmail, discordUserID):
 
     # Main function #
 
-    with open('users.json', 'r') as __userfile__:
-        data = json.load(__userfile__)
-
     userdataHeaders = {
-        "Authorization": "Bearer apikey",
+        "Authorization": f"Bearer {pteroAppKey}",
         "Accept": "application/json",
         "Content-Type": "application/json"
     }
     
-    pteroclient = PterodactylClient(configfile.pteroURL, configfile.pteroAppKey)
 
-    passwordnumber = random.randint(100, 999)
-    pteroclient.user.create_user(
-        username=discordUsername,
-        email=discordEmail,
-        first_name=discordUsername,
-        last_name=discordUserID,
-        password=f"changeme{passwordnumber}"
-    )
-    userdataURL = f'{configfile.pteroURL}api/application/users?filter[email]={discordEmail}'
-    userdataURL = str(quote(userdataURL))
+    makeUser = '{"discordEmail": "'+str(discordEmail)+'","username": "'+str(discordUsername)+'","first_name": "'+str(discordUsername)+'","last_name": "'+str(discordUserID)+'", "password": "changeme123"}'
 
-    userdataResponse = requests.request('GET', url=userdataURL, headers=userdataHeaders)
-    userdataResponse = str(userdataResponse['data']['attributes']['id'])
 
-    pteroclient.user.list_users(email=discordEmail)
-    data[f'{discordEmail}'] = [
-        userdataResponse, discordUserID
-    ]
+    userdataResponse = requests.request('POST', url=f'{pteroURL}/api/application/users', data=makeUser, headers=userdataHeaders)
+    print(userdataResponse)
 
-    with open('users.json', 'w') as userdatafile:
-        json.dumps(data, userdatafile, indent=4)
