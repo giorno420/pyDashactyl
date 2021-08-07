@@ -10,7 +10,7 @@
 | Registering           | ✔️         |
 | Discord oAuth handler | ✔️         |
 | Queue system          | ❌         |
-| Earning coins         | ❌         |
+| Earning coins         | ✔️         |
 | Resources shop        | ❌         |
 
 stuff related to servers wont be able to work since i dont have a node
